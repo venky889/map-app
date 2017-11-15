@@ -31,12 +31,18 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    ### DJANGO APPS ###
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    ### 3RD PARTY APPS ###
+    'geoposition',
+
+    ### LOCAL APPS ###
     'mapsapps',
 ]
 
@@ -119,3 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# GEOPOSITION
+GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyBt9dmtoYWTzrwYrdBlt_Ws00aZ6dhkfLk'
+
