@@ -1,0 +1,14 @@
+# Always want to exclude .git from pushing to GIT
+.git
+
+# Our environment
+env/
+
+# SQLite3 database files:
+*.db
+*.sqlite3
+*.sqlite
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
