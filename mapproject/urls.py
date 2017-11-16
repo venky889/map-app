@@ -16,10 +16,14 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from mapsapps.views import basemap
+from mapsapps.views import basemap, POIView, POIDetail
+from mapproject.views import HomePage
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', basemap.as_view(), name="home"),
-    url(r'^basemap/', basemap.as_view(), name="home"),
+    url(r'^$', HomePage.as_view(), name='home'),
+    url(r'^map/$', basemap.as_view(), name="map"),
+    # url(r'^basemap/', basemap.as_view(), name="map2"),
+    url(r'^poi/$', POIView.as_view(), name='poi_list'),
+    url(r'^poi/(?P<pk>\d+)/$', POIDetail.as_view(), name='poi_detail'),
 ]

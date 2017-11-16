@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print(BASE_DIR)
 
 
 # Quick-start development settings - unsuitable for production
@@ -74,6 +75,7 @@ TEMPLATES = [
     },
 ]
 
+print(TEMPLATES[0]['DIRS'])
 WSGI_APPLICATION = 'mapproject.wsgi.application'
 
 
@@ -125,6 +127,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static_in_app"),
+]
 
 # GEOPOSITION
 GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyBt9dmtoYWTzrwYrdBlt_Ws00aZ6dhkfLk'

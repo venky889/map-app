@@ -1,0 +1,15 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ block.super }}POI{% endblock %}
+
+
+{% block container %}
+<h1>POI LIST VIEW</h1>
+<ul>
+{% for poi in object_list %}
+    <li><a href="{% url 'poi_detail' poi.pk %}">{{ poi.title }}</a> ({{ poi.location.latitude }}, {{ poi.location.longitude }})</li>
+{% empty %}
+    <li>No Points of Interest have been created yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}

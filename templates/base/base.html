@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load staticfiles %}
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="{% block description %}{% endblock description %}">
+        <meta name="author" content="Will Hieronymus">
+        <link rel="shortcut icon" href="{% static 'site/ico/favicon.ico' %}">
+
+        <title>{% block title %}MAPS APP::{% endblock %}</title>
+
+        {% include 'base/_css.html' %}
+
+        <!-- Custom styles for this site -->
+        {% block styles %}
+        <link href="{% static 'site/css/main.css' %}" rel="stylesheet">
+        {% endblock styles %}
+        <!-- Custom tags for the head tag -->
+        {% block extrahead %}{% endblock extrahead %}
+
+
+    </head>
+    <body>
+        {% include 'base/_javascript.html' %}
+
+
+        {% include "base/_navbar.html" %}
+
+        <!--~~~~~~~~~~MESSAGES~~~~~~~~~~~~-->
+        {% block messages %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="container">
+                        <div class="alert alert-{{ message.tags }}">  <!-- singular -->
+                            <a class="close" data-dismiss="alert">×</a>
+                            {{ message|safe }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endblock %}
+
+
+        <!--~~~~~~~~~~MAIN CONTENT CONTAINER~~~~~~~~~~~~-->
+        <div class='container'>
+        {% block container %}
+        {% endblock container %}
+        </div>
+
+    </body>
+</html>
