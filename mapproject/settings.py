@@ -39,9 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     ### 3RD PARTY APPS ###
     'geoposition',
+    'rest_framework',
 
     ### LOCAL APPS ###
     'mapsapps',
