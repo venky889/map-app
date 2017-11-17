@@ -1,0 +1,27 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ block.super }}POI{% endblock %}
+{% block extrahead %}
+<script src="{% static 'site/js/maps.js' %}"></script>
+<script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=Avgq3fEGTBSSTiJD4jp1qo-RpFNo_qcCThyGAi2dYzfFp8CvL2I_Oq4ZgC5sYfdF&callback=loadMapScenario' async defer>
+</script>
+{% endblock extrahead %}
+
+{% block container %}
+
+<div class='col-sm-12'>
+
+<div class='text-center col-sm-6 col-sm-offeset-3'>
+<h1>{{ object.title }}</h1>
+</div>
+
+  <div class='col-sm-6 col-sm-offset-3' id='printoutPanel'></div>
+
+  <div id='myMap' style='width:800px; height:500px;'></div>
+</div>
+
+
+
+
+
+{% endblock container %}

@@ -18,7 +18,7 @@ from .serializers import POISerializer, RoadSerializer, BuildingSerializer
 # Create your views here.
 
 class basemap(TemplateView):
-	template_name='maps/base.html'
+	template_name='maps/map.html'
 
 
 class POIView(ListView):

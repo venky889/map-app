@@ -2,6 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
 from geoposition.fields import GeopositionField
 
 
@@ -14,56 +17,128 @@ class POI(models.Model):
                                              x=self.location.latitude,
                                              y=self.location.longitude)
 
+    @property
+    def lat(self):
+        return self.location.latitude
+
+    @property
+    def lon(self):
+        return self.location.longitude
+
+
 class Road(models.Model):
     name = models.CharField(max_length=255, unique=True)
     speed_limit = models.IntegerField()
 
     @property
     def starts_at(self):  #start line
-        return self.roadcoord_set.all().order_by('sequence').first()
+        return self.coords.all().order_by('sequence').first()
 
     @property
     def ends_at(self):       #end line
-        return self.roadcoord_set.all().order_by('-sequence').first()
+        return self.coords.all().order_by('-sequence').first()
 
     @property
-    def get_road_coords(self):    #return list of all the road coordinates
-        return self.roadcoord_set.all().order_by('sequence')
+    def coords(self):
+        return self.road_coords.all().order_by('sequence')
+
+    def get_next_sequence(self):
+        if self.coords:
+            return self.road_coords.last().sequence + 1
+        else:
+            return 1
 
     def __str__(self):
-        return "{name}/{sl} starts at {start}".format(name=self.name,
-                                                      sl=self.speed_limit,
-                                                      start=self.starts_at.coordinate)
+        name_str = "{name}/{sl}".format(name=self.name,
+                                        sl=self.speed_limit)
+
+        if self.coords:
+            starts_str = " starts at {}".format(self.starts_at.location)
+            name_str += starts_str
+
+        return name_str
 
 
-class RoadCoord(models.Model):
-    road = models.ForeignKey('Road')
-    coordinate = GeopositionField()
-    # To help us build the road, pt1, pt2, pt3, etc
-    sequence = models.IntegerField()
-
-    class Meta:
-        unique_together = ['road', 'sequence']
-
-    def __str__(self):
-        return "Point {} on {} at ({}, {})".format(self.sequence,
-                                                   self.road.name,
-                                                   self.coordinate.latitude,
-                                                   self.coordinate.longitude
-        )
 
 class Building(models.Model):
     number = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)
-    coord_1 = GeopositionField()
-    coord_2 = GeopositionField()
-    coord_3 = GeopositionField()
-    coord_4 = GeopositionField()
 
     def __str__(self):
-        return "Bldg {num}: {name} at {coord}".format(num=self.number,
-                                                      name=self.name,
-                                                      coord=self.coord_1.location)
+        return "Bldg {num}: {name}".format(num=self.number,
+                                           name=self.name)
 
-    def get_building_outline(self):
-        return [coord_1, coord_2, coord_3, coord_4]
+    @property
+    def starts_at(self):
+        return self.coords.all().order_by('sequence').first()
+
+    @property
+    def coords(self):
+        return self.building_coords.all().order_by('sequence')
+
+    def get_next_sequence(self):
+            if self.coords:
+                return self.building_coords.last().sequence + 1
+            else:
+                return 1
+
+    def __str__(self):
+        name_str = "{name}/{number}".format(name=self.name,
+                                            number=self.number)
+
+        if self.coords:
+            starts_str = " starts at {}".format(self.starts_at.location)
+            name_str += starts_str
+        return name_str
+
+
+class CoordManager(models.Manager):
+    def safe_get(self, **kwargs):
+        try:
+            return self.get(**kwargs)
+        except ObjectDoesNotExist:
+            return None
+
+class Coord(models.Model):
+    road = models.ForeignKey('Road', related_name='road_coords',
+                             null=True, blank=True, on_delete=models.CASCADE)
+    building = models.ForeignKey('Building', related_name='building_coords',
+                                 blank=True, null=True, on_delete=models.CASCADE)
+    location = GeopositionField()
+    sequence = models.IntegerField(blank=True)
+
+    objects = CoordManager()
+
+    @property
+    def lat(self):
+        return self.location.latitude
+
+    @property
+    def lon(self):
+        return self.location.longitude
+
+    class Meta:
+        unique_together = (('road', 'sequence'),
+                           ('building', 'sequence'))
+
+    def __str__(self):
+        if self.road:
+            name = self.road.name
+        elif self.building:
+            name = self.building.name
+        else:
+            raise Exception("Each Point shoudl belong to a Road or Building")
+        return "Point {} of {} at ({}, {})".format(self.sequence,
+                                                   name,
+                                                   self.lat,
+                                                   self.lon)
+
+
+@receiver(pre_save, sender=Coord)
+def coord_callback(sender, instance, *args, **kwargs):
+    if instance.road:
+        instance.sequence = instance.road.get_next_sequence()
+    elif instance.building:
+        instance.sequence = instance.building.get_next_sequence()
+    else:
+        raise Exception("Can't have a Point without Building or Road")
