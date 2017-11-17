@@ -9,8 +9,7 @@ class POISerializer(serializers.ModelSerializer):
                   'title',
                   'location',
                   'lat',
-                  'lon'
-        ]
+                  'lon']
 
 
 class CoordSerializer(serializers.ModelSerializer):
@@ -31,11 +30,11 @@ class RoadSerializer(serializers.ModelSerializer):
 
 
 class BuildingSerializer(serializers.ModelSerializer):
-    building_coords = CoordSerializer(many=True)
+    coords = CoordSerializer(many=True)
+
     class Meta:
         model = Building
         fields = ['id',
                   'name',
                   'number',
                   'coords']
-
